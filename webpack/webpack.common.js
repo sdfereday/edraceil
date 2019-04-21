@@ -39,6 +39,10 @@ module.exports = {
     module: {
         rules: [
             {
+                test: require.resolve('kontra'),
+                use: 'exports-loader?kontra'
+            },
+            {
                 test: /\.(js|jsx)$/,
                 loader: "babel-loader",
                 exclude: /node_modules/,
@@ -76,15 +80,7 @@ module.exports = {
                 test: /\.(ttf|eot)(\?[\s\S]+)?$/,
                 exclude: /node_modules/,
                 use: 'file-loader',
-            },
-            // {
-            //     test: /\.(jpe?g|png|gif|svg)$/i,
-            //     exclude: /node_modules/,
-            //     use: [
-            //         'file-loader?name=images/[name].[ext]',
-            //         'image-webpack-loader?bypassOnDebug'
-            //     ]
-            // }
+            }
         ]
     },
     plugins: [
