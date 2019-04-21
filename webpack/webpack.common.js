@@ -45,7 +45,7 @@ module.exports = {
                 query: {
                     "presets": [
                         "@babel/preset-env",
-                        "@babel/preset-react"
+                        // "@babel/preset-react"
                     ],
                     "plugins": [
                         ["@babel/transform-runtime"]
