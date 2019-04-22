@@ -18,7 +18,9 @@ support module loading so at present so we're using webpacks export-loader. */
 import kontra from 'kontra'
 
 /// Helpers
-import { normalize } from './helpers/vectorHelpers';
+import { normalize } from './helpers/vectorHelpers'
+import { isOverlapping } from './helpers/collisionHelpers'
+import { distance } from './helpers/physicsHelpers'
 
 /// Modules
 /* At present our modules shouldn't be bothered about 'how' the game loop runs, just that it does run.
@@ -33,89 +35,250 @@ const canvasElement = document.getElementById('canvas');
 // Init the kontra engine
 kontra.init(canvasElement);
 
-// An entity.
-/* Entities will have a few properties:
-- An ID to link to other data resources (what it is, etc)
-- A corresponding sprite object
-- Using the id we attach stats also
-- Basically the ID connects all the pieces together here
+// Creates sprites using Kontra, adds them to a cache to be re-used for whatever needs them.
+const SpriteFactory = (options = { _spriteCache: [] }) => {
+    /* Try to keep sprites in containers so there's no risk of other things
+    getting hold of them and weird visual stuff happening. Obviously if it's intended
+    that's fine, but just beware.
+    Wherever possible however, try to work only through the entity containers since they're
+    the single source of truth for all 'things' in the game world. */
+    return {
+        createSprite: ({
+            id,
+            x,
+            y,
+            color
+        }) => {
+            const newSprite = kontra.sprite({
+                id, x, y,
+                color,  // fill color of the sprite rectangle
+                width: 20,     // width and height of the sprite rectangle
+                height: 40,
+                //dx: 2          // move the sprite 2px to the right every frame
+            })
 
-Example:
-In the field you'll have a sprite with an ID (say it's player-controller),
-if sprite interacts with a thing, we respond to said event in a decoupled way,
-passing the ID of the thing and the player.
-From there we can determine:
-- That we're in the field
-- That the player sprite interacted
-- And the thing it interacted with
-- We can then decide what to do with this interaction
+            const existingCache = [newSprite].concat(options._spriteCache)
 
-For instance we could:
-- Start a battle passing in the ID of both (using said ID we can monitor / modify stats)
-- Start a conversation (using ID we can start a simple convo)
-- Start a cutscene (using the ID's we can start a cutscene state (for later versions))
+            if (existingCache.filter(item => item.id === id).length > 1) {
+                console.warn('You are pushing sprites with the same ID, this is not recommended:', id);
+            }
 
-The idea here is to decouple concerns as much as possible, but respond to the given ID, and with
-such an ID we can modify or listen to what we want and react in any way we see fit.
+            options._spriteCache = Array.from([...new Set(existingCache.map(sprite => sprite.id))])
+                .map(id => ({
+                    id,
+                    ...existingCache.find(item => item.id === id)
+                }))
 
-Anything that requires visual feedback can be passed to whatever module cares about it. If an event
-goes off for a door opening, we might:
-- Update the door graphic on the sprite its self
-- Update the data for the door so that in future it stays open (since we've opened it)
+            return newSprite;
+        },
+        getSprites: () => options._spriteCache
+    }
+}
 
-Things like this would be stored in level data anyway using a hashing system for example.
+const sprites = SpriteFactory();
 
-Okay so now that's out of the way, the first test is to:
-- Produce a player character that can move around using user input
-- Interact with something and send the event back up so we know about it
-- Deal with the event and effect anything that cares
+// Entity containers
+/* Containers bring everything together, they make assumptions and coupling
+but this should be the only place this needs to happen.
+Any props that are from / use a lib will be prefixed with its name.
 */
-// This is our player sprite. You can basically move this / attach it to anything
-// that needs to make a visual feedback (could be a cutscene, could be the field, etc)
-const sprite = kontra.sprite({
-    x: 100,        // starting x,y position of the sprite
-    y: 80,
-    color: 'red',  // fill color of the sprite rectangle
-    width: 20,     // width and height of the sprite rectangle
-    height: 40,
-    //dx: 2          // move the sprite 2px to the right every frame
-});
+const EntityContainer = ({
+    id,
+    type,
+    color = 'red',
+    pos = {
+        x: 0,
+        y: 0
+    },
+    stats,
+    hitbox = {
+        radius: 1
+    }
+}) => {
+    // Using the factory we create a sprite matching the ID of this container (and props given)
+    const kontraSprite = sprites.createSprite({ id, color, x: pos.x, y: pos.y })
+
+    const _move = (x, y) => {
+        // Normalize in all 8 directions
+        const { nx, ny } = normalize({ x, y }, 1);
+
+        // Use 'ddx' when you need acc (which we don't right now)
+        kontraSprite.dx = nx;
+        kontraSprite.dy = ny;
+        kontraSprite.advance();
+    }
+
+    const _interact = () => {
+        console.log('Looking around...');
+    }
+
+    const _update = () => {
+        // Just dealing with player sprite right now, will move later
+        kontraSprite.update();
+
+        // Wrap the sprites position when it reaches
+        // the edge of the screen
+        if (kontraSprite.x > kontra.canvas.width) {
+            kontraSprite.x = -kontraSprite.width;
+        }
+    }
+
+    const _render = () => {
+        kontraSprite.render();
+    }
+
+    return {
+        // Info
+        id,
+        type,
+        getStats: () => stats,
+        // Kontra info (used to find out where we are in the world visually)
+        x: () => kontraSprite.x,
+        y: () => kontraSprite.y,
+        width: kontraSprite.width, // TODO: Make use of hitbox, don't rely on sprite.
+        height: kontraSprite.height,
+        radius: hitbox.radius,
+        // Actions
+        move: ({ x, y }) => _move(x, y),
+        interact: () => _interact(),
+        // Kontra methods
+        update: () => _update(),
+        render: () => _render()
+    }
+}
+
+// Can use a factory to populate this later on (from map data for example)
+const entities = [
+    EntityContainer({
+        id: 'player-1',
+        type: 'player', // TODO: Could use some consts here.
+        color: 'red',
+        pos: {
+            x: 200,
+            y: 50
+        },
+        stats: {
+            health: {
+                max: 100,
+                min: 0,
+                current: 50
+            }
+        },
+        hitBox: {
+            radius: 1
+        }
+    }),
+    EntityContainer({
+        id: 'box-1',
+        type: 'box',
+        color: 'blue',
+        pos: {
+            x: 100,
+            y: 50
+        },
+        stats: {
+            health: {
+                max: 100,
+                min: 0,
+                current: 50
+            }
+        },
+        hitBox: {
+            radius: 1
+        }
+    }),
+    EntityContainer({
+        id: 'box-2',
+        type: 'box',
+        color: 'green',
+        pos: {
+            x: 170,
+            y: 120
+        },
+        stats: {
+            health: {
+                max: 100,
+                min: 0,
+                current: 50
+            }
+        },
+        hitBox: {
+            radius: 1
+        }
+    })
+]
+
+const player = entities.find(({ id }) => id === 'player-1')
 
 // Control managers
 const manualControl = ({ speed }) => {
     const dir = 0.1 * speed;
     return {
-        vx: kontra.keys.pressed('right') ? dir : kontra.keys.pressed('left') ? -dir : 0,
-        vy: kontra.keys.pressed('down') ? dir : kontra.keys.pressed('up') ? -dir : 0,
+        x: kontra.keys.pressed('right') ? dir : kontra.keys.pressed('left') ? -dir : 0,
+        y: kontra.keys.pressed('down') ? dir : kontra.keys.pressed('up') ? -dir : 0,
     }
 }
 
-const loop = kontra.gameLoop({  // create the main game loop
-    update: function () {        // update the game state
-        // Just dealing with player sprite right now, will move later
-        sprite.update();
+// Control bindings
+kontra.keys.bind('e', () => {
+    // player.interact((interestingData) => {
+    //     console.log(interestingData);
+    // });
 
-        // Wrap the sprites position when it reaches
-        // the edge of the screen
-        if (sprite.x > kontra.canvas.width) {
-            sprite.x = -sprite.width;
+    const overlappingWithPlayer = entities.filter(entity => {
+        if (entity.type !== 'player') {
+            // Circle vs circle detection (still being tested, needs to use hitboxes really),
+            // at present props are a little confused with each other (x and y specifically).
+            // So that part needs a little re-working.
+            const a = {
+                x: entity.x(),
+                y: entity.y(),
+                width: entity.width,
+                radius: entity.radius
+            }
+
+            const b = {
+                x: player.x(),
+                y: player.y(),
+                width: player.width,
+                radius: player.radius
+            }
+
+            return isOverlapping(a, b)
         }
 
-        // Normalize in all 8 directions
-        const { vx, vy } = manualControl({ speed: 10 });
-        const { nx, ny } = normalize({
-            x: vx,
-            y: vy
-        }, 1);
+        return false;
+    }).sort((a, b) =>
+        distance({ x: a.x(), y: a.y() }, { x: player.x(), y: player.y() }) <
+        distance({ x: b.x(), y: b.y() }, { x: player.x(), y: player.y() })
+    );
 
-        // Use 'ddx' when you need acc (which we don't right now)
-        sprite.dx = nx;
-        sprite.dy = ny;
-        sprite.advance();
+    // With distance check applied also
+    if (overlappingWithPlayer.length) {
+        console.log('Do something with data...')
+        console.log(overlappingWithPlayer[0])
+    }
+
+    // Useful for enemies
+    // sprites = sprites.filter(sprite => sprite.isAlive());
+})
+
+// Main loop
+const loop = kontra.gameLoop({
+    update: () => {
+        // Could just as easily be automatically controlled so we handle from outside.
+        const pos = manualControl({ speed: 10 });
+        player.move(pos);
+
+        // Kontra note: Update must be called (container is entry point).
+        entities.forEach(entity => entity.update());
     },
-    render: function () {        // render the game state
-        sprite.render();
+    render: () => {
+        // Kontra note: Render must be called (container is entry point).
+        entities.forEach(entity => entity.render());
     }
 });
 
-loop.start();    // start the game
+if (player) { loop.start(); } else {
+    console.error('Loop didnt start.');
+}

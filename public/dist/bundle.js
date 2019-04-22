@@ -86,6 +86,72 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./node_modules/@babel/runtime/helpers/arrayWithoutHoles.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/arrayWithoutHoles.js ***!
+  \******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("function _arrayWithoutHoles(arr) {\n  if (Array.isArray(arr)) {\n    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {\n      arr2[i] = arr[i];\n    }\n\n    return arr2;\n  }\n}\n\nmodule.exports = _arrayWithoutHoles;\n\n//# sourceURL=webpack:///./node_modules/@babel/runtime/helpers/arrayWithoutHoles.js?");
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/defineProperty.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/defineProperty.js ***!
+  \***************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("function _defineProperty(obj, key, value) {\n  if (key in obj) {\n    Object.defineProperty(obj, key, {\n      value: value,\n      enumerable: true,\n      configurable: true,\n      writable: true\n    });\n  } else {\n    obj[key] = value;\n  }\n\n  return obj;\n}\n\nmodule.exports = _defineProperty;\n\n//# sourceURL=webpack:///./node_modules/@babel/runtime/helpers/defineProperty.js?");
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/iterableToArray.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/iterableToArray.js ***!
+  \****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("function _iterableToArray(iter) {\n  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === \"[object Arguments]\") return Array.from(iter);\n}\n\nmodule.exports = _iterableToArray;\n\n//# sourceURL=webpack:///./node_modules/@babel/runtime/helpers/iterableToArray.js?");
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/nonIterableSpread.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/nonIterableSpread.js ***!
+  \******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("function _nonIterableSpread() {\n  throw new TypeError(\"Invalid attempt to spread non-iterable instance\");\n}\n\nmodule.exports = _nonIterableSpread;\n\n//# sourceURL=webpack:///./node_modules/@babel/runtime/helpers/nonIterableSpread.js?");
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/objectSpread.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/objectSpread.js ***!
+  \*************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("var defineProperty = __webpack_require__(/*! ./defineProperty */ \"./node_modules/@babel/runtime/helpers/defineProperty.js\");\n\nfunction _objectSpread(target) {\n  for (var i = 1; i < arguments.length; i++) {\n    var source = arguments[i] != null ? arguments[i] : {};\n    var ownKeys = Object.keys(source);\n\n    if (typeof Object.getOwnPropertySymbols === 'function') {\n      ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {\n        return Object.getOwnPropertyDescriptor(source, sym).enumerable;\n      }));\n    }\n\n    ownKeys.forEach(function (key) {\n      defineProperty(target, key, source[key]);\n    });\n  }\n\n  return target;\n}\n\nmodule.exports = _objectSpread;\n\n//# sourceURL=webpack:///./node_modules/@babel/runtime/helpers/objectSpread.js?");
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/toConsumableArray.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/toConsumableArray.js ***!
+  \******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("var arrayWithoutHoles = __webpack_require__(/*! ./arrayWithoutHoles */ \"./node_modules/@babel/runtime/helpers/arrayWithoutHoles.js\");\n\nvar iterableToArray = __webpack_require__(/*! ./iterableToArray */ \"./node_modules/@babel/runtime/helpers/iterableToArray.js\");\n\nvar nonIterableSpread = __webpack_require__(/*! ./nonIterableSpread */ \"./node_modules/@babel/runtime/helpers/nonIterableSpread.js\");\n\nfunction _toConsumableArray(arr) {\n  return arrayWithoutHoles(arr) || iterableToArray(arr) || nonIterableSpread();\n}\n\nmodule.exports = _toConsumableArray;\n\n//# sourceURL=webpack:///./node_modules/@babel/runtime/helpers/toConsumableArray.js?");
+
+/***/ }),
+
 /***/ "./node_modules/kontra/kontra.js":
 /*!***************************************!*\
   !*** ./node_modules/kontra/kontra.js ***!
@@ -97,6 +163,42 @@ eval("kontra = {\n\n  /**\n   * Initialize the canvas.\n   * @memberof kontra\n 
 
 /***/ }),
 
+/***/ "./src/helpers/collisionHelpers.js":
+/*!*****************************************!*\
+  !*** ./src/helpers/collisionHelpers.js ***!
+  \*****************************************/
+/*! exports provided: isOverlapping */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"isOverlapping\", function() { return isOverlapping; });\nvar isOverlapping = function isOverlapping(a, b) {\n  // circle vs. circle collision detection\n  // TODO: Do we not also need height?\n  var dx = a.x - b.x;\n  var dy = a.y - b.y;\n  return Math.sqrt(dx * dx + dy * dy) < a.radius + b.width;\n};\n\n//# sourceURL=webpack:///./src/helpers/collisionHelpers.js?");
+
+/***/ }),
+
+/***/ "./src/helpers/physicsHelpers.js":
+/*!***************************************!*\
+  !*** ./src/helpers/physicsHelpers.js ***!
+  \***************************************/
+/*! exports provided: distance */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"distance\", function() { return distance; });\nvar distance = function distance(a, b) {\n  var _a = a.x - b.x;\n\n  var _b = a.y - b.y;\n\n  return Math.sqrt(_a * _a + _b * _b);\n};\n\n//# sourceURL=webpack:///./src/helpers/physicsHelpers.js?");
+
+/***/ }),
+
+/***/ "./src/helpers/vectorHelpers.js":
+/*!**************************************!*\
+  !*** ./src/helpers/vectorHelpers.js ***!
+  \**************************************/
+/*! exports provided: normalize */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"normalize\", function() { return normalize; });\nvar normalize = function normalize(point, scale) {\n  var norm = Math.sqrt(point.x * point.x + point.y * point.y);\n\n  if (norm != 0) {\n    // as3 return 0,0 for a point of zero length\n    point.x = scale * point.x / norm;\n    point.y = scale * point.y / norm;\n  }\n\n  return {\n    nx: point.x,\n    ny: point.y\n  };\n};\n\n//# sourceURL=webpack:///./src/helpers/vectorHelpers.js?");
+
+/***/ }),
+
 /***/ "./src/index.js":
 /*!**********************!*\
   !*** ./src/index.js ***!
@@ -105,7 +207,7 @@ eval("kontra = {\n\n  /**\n   * Initialize the canvas.\n   * @memberof kontra\n 
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var kontra__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! kontra */ \"./node_modules/kontra/kontra.js\");\n/* harmony import */ var kontra__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(kontra__WEBPACK_IMPORTED_MODULE_0__);\n/// Libraries\n\n/* Kontra is currently being tested, and should be swappable if a more adequate engine is found. It also doesn't\r\nsupport module loading so at present so we're using webpacks export-loader. */\n /// Modules\n\n/* At present our modules shouldn't be bothered about 'how' the game loop runs, just that it does run.\r\nIdeally, we want to pass the graphics work to somewhere else, whilst these modules for example will\r\njust generated data, and separate any concerns.*/\n// import { startField } from './modules/field/module';\n// import { startBattle } from './modules/battle/module';\n/// Tests\n\nvar canvasElement = document.getElementById('canvas'); // Init the kontra engine\n\nkontra__WEBPACK_IMPORTED_MODULE_0___default.a.init(canvasElement);\nvar sprite = kontra__WEBPACK_IMPORTED_MODULE_0___default.a.sprite({\n  x: 100,\n  // starting x,y position of the sprite\n  y: 80,\n  color: 'red',\n  // fill color of the sprite rectangle\n  width: 20,\n  // width and height of the sprite rectangle\n  height: 40,\n  dx: 2 // move the sprite 2px to the right every frame\n\n});\nvar loop = kontra__WEBPACK_IMPORTED_MODULE_0___default.a.gameLoop({\n  // create the main game loop\n  update: function update() {\n    // update the game state\n    sprite.update(); // wrap the sprites position when it reaches\n    // the edge of the screen\n\n    if (sprite.x > kontra__WEBPACK_IMPORTED_MODULE_0___default.a.canvas.width) {\n      sprite.x = -sprite.width;\n    }\n  },\n  render: function render() {\n    // render the game state\n    sprite.render();\n  }\n});\nloop.start(); // start the game\n\n//# sourceURL=webpack:///./src/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _babel_runtime_helpers_objectSpread__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/objectSpread */ \"./node_modules/@babel/runtime/helpers/objectSpread.js\");\n/* harmony import */ var _babel_runtime_helpers_objectSpread__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_objectSpread__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ \"./node_modules/@babel/runtime/helpers/toConsumableArray.js\");\n/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var kontra__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! kontra */ \"./node_modules/kontra/kontra.js\");\n/* harmony import */ var kontra__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(kontra__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _helpers_vectorHelpers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./helpers/vectorHelpers */ \"./src/helpers/vectorHelpers.js\");\n/* harmony import */ var _helpers_collisionHelpers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./helpers/collisionHelpers */ \"./src/helpers/collisionHelpers.js\");\n/* harmony import */ var _helpers_physicsHelpers__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./helpers/physicsHelpers */ \"./src/helpers/physicsHelpers.js\");\n\n\n/// Notes\n\n/*\r\n- Sprites don't really do much and just move when / where told to. They also have interact\r\ntriggers so we know where they are in the world.\r\n- Behind the scenes services will run and produce results based on what they're given. This could\r\nbe anything from 'turn this on because this happened' to, 'get me this as a sprite just\r\ncollided' etc.\r\n- Controls will be attached to sprites but not inside the sprites as we might need to take over\r\nthem automatically for whatever reason.\r\n- I would advise making a sort of animation state machine system that, depending on the state\r\nof a service, will trigger something off?\r\n- Don't make it complex for goodness sake, if the idea doesn't work, try another.\r\n*/\n/// Libraries\n\n/* Kontra is currently being tested, and should be swappable if a more adequate engine is found. It also doesn't\r\nsupport module loading so at present so we're using webpacks export-loader. */\n /// Helpers\n\n\n\n /// Modules\n\n/* At present our modules shouldn't be bothered about 'how' the game loop runs, just that it does run.\r\nIdeally, we want to pass the graphics work to somewhere else, whilst these modules for example will\r\njust generated data, and separate any concerns.*/\n// import { startField } from './modules/field/module';\n// import { startBattle } from './modules/battle/module';\n/// Tests\n\nvar canvasElement = document.getElementById('canvas'); // Init the kontra engine\n\nkontra__WEBPACK_IMPORTED_MODULE_2___default.a.init(canvasElement); // Creates sprites using Kontra, adds them to a cache to be re-used for whatever needs them.\n\nvar SpriteFactory = function SpriteFactory() {\n  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {\n    _spriteCache: []\n  };\n\n  /* Try to keep sprites in containers so there's no risk of other things\r\n  getting hold of them and weird visual stuff happening. Obviously if it's intended\r\n  that's fine, but just beware.\r\n  Wherever possible however, try to work only through the entity containers since they're\r\n  the single source of truth for all 'things' in the game world. */\n  return {\n    createSprite: function createSprite(_ref) {\n      var id = _ref.id,\n          x = _ref.x,\n          y = _ref.y,\n          color = _ref.color;\n      var newSprite = kontra__WEBPACK_IMPORTED_MODULE_2___default.a.sprite({\n        id: id,\n        x: x,\n        y: y,\n        color: color,\n        // fill color of the sprite rectangle\n        width: 20,\n        // width and height of the sprite rectangle\n        height: 40 //dx: 2          // move the sprite 2px to the right every frame\n\n      });\n      var existingCache = [newSprite].concat(options._spriteCache);\n\n      if (existingCache.filter(function (item) {\n        return item.id === id;\n      }).length > 1) {\n        console.warn('You are pushing sprites with the same ID, this is not recommended:', id);\n      }\n\n      options._spriteCache = Array.from(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1___default()(new Set(existingCache.map(function (sprite) {\n        return sprite.id;\n      })))).map(function (id) {\n        return _babel_runtime_helpers_objectSpread__WEBPACK_IMPORTED_MODULE_0___default()({\n          id: id\n        }, existingCache.find(function (item) {\n          return item.id === id;\n        }));\n      });\n      return newSprite;\n    },\n    getSprites: function getSprites() {\n      return options._spriteCache;\n    }\n  };\n};\n\nvar sprites = SpriteFactory(); // Entity containers\n\n/* Containers bring everything together, they make assumptions and coupling\r\nbut this should be the only place this needs to happen.\r\nAny props that are from / use a lib will be prefixed with its name.\r\n*/\n\nvar EntityContainer = function EntityContainer(_ref2) {\n  var id = _ref2.id,\n      type = _ref2.type,\n      _ref2$color = _ref2.color,\n      color = _ref2$color === void 0 ? 'red' : _ref2$color,\n      _ref2$pos = _ref2.pos,\n      pos = _ref2$pos === void 0 ? {\n    x: 0,\n    y: 0\n  } : _ref2$pos,\n      stats = _ref2.stats,\n      _ref2$hitbox = _ref2.hitbox,\n      hitbox = _ref2$hitbox === void 0 ? {\n    radius: 1\n  } : _ref2$hitbox;\n  // Using the factory we create a sprite matching the ID of this container (and props given)\n  var kontraSprite = sprites.createSprite({\n    id: id,\n    color: color,\n    x: pos.x,\n    y: pos.y\n  });\n\n  var _move = function _move(x, y) {\n    // Normalize in all 8 directions\n    var _normalize = Object(_helpers_vectorHelpers__WEBPACK_IMPORTED_MODULE_3__[\"normalize\"])({\n      x: x,\n      y: y\n    }, 1),\n        nx = _normalize.nx,\n        ny = _normalize.ny; // Use 'ddx' when you need acc (which we don't right now)\n\n\n    kontraSprite.dx = nx;\n    kontraSprite.dy = ny;\n    kontraSprite.advance();\n  };\n\n  var _interact = function _interact() {\n    console.log('Looking around...');\n  };\n\n  var _update = function _update() {\n    // Just dealing with player sprite right now, will move later\n    kontraSprite.update(); // Wrap the sprites position when it reaches\n    // the edge of the screen\n\n    if (kontraSprite.x > kontra__WEBPACK_IMPORTED_MODULE_2___default.a.canvas.width) {\n      kontraSprite.x = -kontraSprite.width;\n    }\n  };\n\n  var _render = function _render() {\n    kontraSprite.render();\n  };\n\n  return {\n    // Info\n    id: id,\n    type: type,\n    getStats: function getStats() {\n      return stats;\n    },\n    // Kontra info (used to find out where we are in the world visually)\n    x: function x() {\n      return kontraSprite.x;\n    },\n    y: function y() {\n      return kontraSprite.y;\n    },\n    width: kontraSprite.width,\n    // TODO: Make use of hitbox, don't rely on sprite.\n    height: kontraSprite.height,\n    radius: hitbox.radius,\n    // Actions\n    move: function move(_ref3) {\n      var x = _ref3.x,\n          y = _ref3.y;\n      return _move(x, y);\n    },\n    interact: function interact() {\n      return _interact();\n    },\n    // Kontra methods\n    update: function update() {\n      return _update();\n    },\n    render: function render() {\n      return _render();\n    }\n  };\n}; // Can use a factory to populate this later on (from map data for example)\n\n\nvar entities = [EntityContainer({\n  id: 'player-1',\n  type: 'player',\n  // TODO: Could use some consts here.\n  color: 'red',\n  pos: {\n    x: 200,\n    y: 50\n  },\n  stats: {\n    health: {\n      max: 100,\n      min: 0,\n      current: 50\n    }\n  },\n  hitBox: {\n    radius: 1\n  }\n}), EntityContainer({\n  id: 'box-1',\n  type: 'box',\n  color: 'blue',\n  pos: {\n    x: 100,\n    y: 50\n  },\n  stats: {\n    health: {\n      max: 100,\n      min: 0,\n      current: 50\n    }\n  },\n  hitBox: {\n    radius: 1\n  }\n}), EntityContainer({\n  id: 'box-2',\n  type: 'box',\n  color: 'green',\n  pos: {\n    x: 170,\n    y: 120\n  },\n  stats: {\n    health: {\n      max: 100,\n      min: 0,\n      current: 50\n    }\n  },\n  hitBox: {\n    radius: 1\n  }\n})];\nvar player = entities.find(function (_ref4) {\n  var id = _ref4.id;\n  return id === 'player-1';\n}); // Control managers\n\nvar manualControl = function manualControl(_ref5) {\n  var speed = _ref5.speed;\n  var dir = 0.1 * speed;\n  return {\n    x: kontra__WEBPACK_IMPORTED_MODULE_2___default.a.keys.pressed('right') ? dir : kontra__WEBPACK_IMPORTED_MODULE_2___default.a.keys.pressed('left') ? -dir : 0,\n    y: kontra__WEBPACK_IMPORTED_MODULE_2___default.a.keys.pressed('down') ? dir : kontra__WEBPACK_IMPORTED_MODULE_2___default.a.keys.pressed('up') ? -dir : 0\n  };\n}; // Control bindings\n\n\nkontra__WEBPACK_IMPORTED_MODULE_2___default.a.keys.bind('e', function () {\n  // player.interact((interestingData) => {\n  //     console.log(interestingData);\n  // });\n  var overlappingWithPlayer = entities.filter(function (entity) {\n    if (entity.type !== 'player') {\n      // Circle vs circle detection (still being tested, needs to use hitboxes really),\n      // at present props are a little confused with each other (x and y specifically).\n      // So that part needs a little re-working.\n      var a = {\n        x: entity.x(),\n        y: entity.y(),\n        width: entity.width,\n        radius: entity.radius\n      };\n      var b = {\n        x: player.x(),\n        y: player.y(),\n        width: player.width,\n        radius: player.radius\n      };\n      return Object(_helpers_collisionHelpers__WEBPACK_IMPORTED_MODULE_4__[\"isOverlapping\"])(a, b);\n    }\n\n    return false;\n  }).sort(function (a, b) {\n    return Object(_helpers_physicsHelpers__WEBPACK_IMPORTED_MODULE_5__[\"distance\"])({\n      x: a.x(),\n      y: a.y()\n    }, {\n      x: player.x(),\n      y: player.y()\n    }) < Object(_helpers_physicsHelpers__WEBPACK_IMPORTED_MODULE_5__[\"distance\"])({\n      x: b.x(),\n      y: b.y()\n    }, {\n      x: player.x(),\n      y: player.y()\n    });\n  }); // With distance check applied also\n\n  if (overlappingWithPlayer.length) {\n    console.log('Do something with data...');\n    console.log(overlappingWithPlayer[0]);\n  } // Useful for enemies\n  // sprites = sprites.filter(sprite => sprite.isAlive());\n\n}); // Main loop\n\nvar loop = kontra__WEBPACK_IMPORTED_MODULE_2___default.a.gameLoop({\n  update: function update() {\n    // Could just as easily be automatically controlled so we handle from outside.\n    var pos = manualControl({\n      speed: 10\n    });\n    player.move(pos); // Kontra note: Update must be called (container is entry point).\n\n    entities.forEach(function (entity) {\n      return entity.update();\n    });\n  },\n  render: function render() {\n    // Kontra note: Render must be called (container is entry point).\n    entities.forEach(function (entity) {\n      return entity.render();\n    });\n  }\n});\n\nif (player) {\n  loop.start();\n} else {\n  console.error('Loop didnt start.');\n}\n\n//# sourceURL=webpack:///./src/index.js?");
 
 /***/ })
 
