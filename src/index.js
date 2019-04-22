@@ -22,6 +22,9 @@ import { normalize } from './helpers/vectorHelpers'
 import { isOverlapping } from './helpers/collisionHelpers'
 import { distance } from './helpers/physicsHelpers'
 
+/// Actions
+import { getAction } from './modules/field/actionMap'
+
 /// Modules
 /* At present our modules shouldn't be bothered about 'how' the game loop runs, just that it does run.
 Ideally, we want to pass the graphics work to somewhere else, whilst these modules for example will
@@ -91,6 +94,7 @@ const EntityContainer = ({
         y: 0
     },
     stats,
+    actions = [],
     hitbox = {
         radius: 1
     }
@@ -108,8 +112,16 @@ const EntityContainer = ({
         kontraSprite.advance();
     }
 
-    const _interact = () => {
-        console.log('Looking around...');
+    const _interact = (actionReq) => {
+        console.log(id, 'received signal to', actionReq);
+        const chosenAction = actions.find(({ id }) => id === actionReq);
+
+        if (chosenAction) {
+            console.log('And found an action to match:');
+            console.log(chosenAction);
+        } else {
+            console.log('But no action was found.');
+        }
     }
 
     const _update = () => {
@@ -140,7 +152,7 @@ const EntityContainer = ({
         radius: hitbox.radius,
         // Actions
         move: ({ x, y }) => _move(x, y),
-        interact: () => _interact(),
+        interact: (actionReq) => _interact(actionReq),
         // Kontra methods
         update: () => _update(),
         render: () => _render()
@@ -185,7 +197,16 @@ const entities = [
         },
         hitBox: {
             radius: 1
-        }
+        },
+        actions: [
+            {
+                name: 'Open',
+                id: 'open-box',
+                do: [
+                    // ... animations, functions, etc
+                ]
+            }
+        ]
     }),
     EntityContainer({
         id: 'box-2',
@@ -204,7 +225,16 @@ const entities = [
         },
         hitBox: {
             radius: 1
-        }
+        },
+        actions: [
+            {
+                name: 'Save The World',
+                id: 'save-the-world',
+                do: [
+                    // ... animations, functions, etc
+                ]
+            }
+        ]
     })
 ]
 
@@ -255,8 +285,13 @@ kontra.keys.bind('e', () => {
 
     // With distance check applied also
     if (overlappingWithPlayer.length) {
-        console.log('Do something with data...')
-        console.log(overlappingWithPlayer[0])
+        const entity = overlappingWithPlayer[0];
+        const actionReq = getAction({
+            id: entity.id,
+            type: entity.type
+        });
+
+        entity.interact(actionReq);
     }
 
     // Useful for enemies
