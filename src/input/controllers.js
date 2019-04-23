@@ -8,6 +8,7 @@ const _move = ({ speed, keyPressedHandler, right, left, up, down }) => {
 
 export default {
     init: ({
+        _disabled = false,
         bindings = [],
         keyPressedHandler = (key) => {},
         keyMap = {
@@ -21,7 +22,8 @@ export default {
         bindings.map(({ bind = 'key', to = () => {}, keyBindingMethod = () => {} }) => keyBindingMethod(bind, to))
 
         return {
-            move: ({ speed }) => _move({ speed, keyPressedHandler, ...keyMap })
+            enabled: state => _disabled = state,
+            move: ({ speed }) => !_disabled && _move({ speed, keyPressedHandler, ...keyMap })
         }
     }
 }

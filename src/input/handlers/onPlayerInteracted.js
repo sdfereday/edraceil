@@ -1,7 +1,7 @@
 import { isOverlapping } from '../../helpers/collisionHelpers'
 import { distance } from '../../helpers/physicsHelpers'
+import { getAction } from '../../helpers/actionHelpers'
 import { actionTable } from '../../data/actions'
-import { getAction } from '../../modules/field/actionMap'
 
 export const onPlayerInteracted = ({ entities, player }) => {
   // player.interact((interestingData) => {

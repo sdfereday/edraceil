@@ -1,25 +1,26 @@
-import { manualLoop } from "./utils/gameloop";
 import { createTurnIterator } from "./utils/turnGenerator";
 import queueStateMachine from "./fsm/queueStateMachine";
 import actor from "./entities/actor";
 import aiActor from "./entities/aiActor";
 
-const actorQueueState = queueStateMachine();
+export default ({ ...options }) => {
 
-const actorGnoll = aiActor("Gnoll", actorQueueState);
-const actorSam = actor("Sam", actorQueueState);
-const actors = [actorGnoll, actorSam];
+  console.log('New battle started');
+  console.log(optons);
+  const actorQueueState = queueStateMachine();
 
-const turnIterator = createTurnIterator(actors);
+  const actorGnoll = aiActor("Gnoll", actorQueueState);
+  const actorSam = actor("Sam", actorQueueState);
+  const actors = [actorGnoll, actorSam];
 
-const requiredComplete = [actorQueueState].concat(actors);
+  const turnIterator = createTurnIterator(actors);
 
-actorSam.setTarget(actorGnoll);
-actorGnoll.setTarget(actorSam);
+  const requiredComplete = [actorQueueState].concat(actors);
 
+  actorSam.setTarget(actorGnoll);
+  actorGnoll.setTarget(actorSam);
 
-export const startBattle = () => {
-  manualLoop(() => {
+  const _update = () => {
     actorQueueState.update();
     actors.forEach(x => x.update());
 
@@ -33,5 +34,9 @@ export const startBattle = () => {
       actors.map(x => x.onTurnChanged());
       nextTurnTaker.decide();
     }
-  }, 200);
+  }
+
+  return {
+    update: _update
+  }
 }
