@@ -29,7 +29,7 @@ const postCSSLoader = {
 
 module.exports = {
     // devtool: 'source-map',
-    mode: 'development', // 'production'
+    mode: 'development', // 'production' || 'development'
     entry: './src/index.js',
     output: {
         publicPath: '/dist/', // Required for hot-reloading, points to public path of built assets (memory or otherwise).
