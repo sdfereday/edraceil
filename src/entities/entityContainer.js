@@ -58,6 +58,7 @@ export default ({
         type,
         spriteConfig,
         getStats: () => stats,
+        setStats: ({ k: v }) => console.log('Modify stats:', k, v),
         hitbox: () => hitbox,
         // Actions
         move: ({ x, y }) => _move(x, y),

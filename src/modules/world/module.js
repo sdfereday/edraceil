@@ -29,7 +29,7 @@ export default ({
    setIsInBattle(false);
   }
 
-  const startBattle = () => {
+  const startBattle = entityContainers => {
 
     // Never start a second battle if one is in progress!
     if (isInBattle()) {
@@ -45,7 +45,16 @@ export default ({
    // and current zone everything's in). Each battle needs a zone, regardless wether it's
    // programatically done.
    const newBattle = BattleModule({
-     onBattleEnded
+      participantData: entityContainers.map(entity => {
+        return {
+          id: entity.id,
+          type: entity.type,
+          getStats: entity.getStats,
+          setStats: entity.setStats,
+          command: entity.interact
+        }
+      }),
+      onBattleEnded
    });
 
    setCurrentBattle(newBattle);
@@ -60,6 +69,7 @@ export default ({
 
   const entities = getEntities()
   const player = getEntity('player-1')
+  const hostile = getEntity('gnoll-1')
 
   const manualControl = controller.init({
     keyPressedHandler,
@@ -71,10 +81,12 @@ export default ({
         },
         keyBindingMethod
       },
-      // Literally just for testing battle.
+      // Literally just for testing battle, usually this would be a trigger of some sort in environment.
       {
         bind: 'b',
-        to: () => startBattle,
+        to: () => {
+          startBattle([player, hostile])
+        },
         keyBindingMethod
       }
     ]
@@ -83,7 +95,7 @@ export default ({
   const _update = () => {
 
     if (isInBattle()) {
-      const battle = currentBattle;
+      const battle = currentBattle();
       battle.update()
     } else {
       const pos = manualControl.move({ speed: 10 })

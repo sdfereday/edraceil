@@ -1,6 +1,7 @@
 import { top, forget } from "../helpers/arrayHelpers";
 
-export default () => {
+export default (options = { onBattleUpdate: data => {} }) => {
+  const { onBattleUpdate } = options;
   let innerState = [];
 
   return {
@@ -13,11 +14,15 @@ export default () => {
       if (s.isComplete()) {
         s.exit();
         innerState = forget(s.id, innerState);
+
+        onBattleUpdate(innerState);
       }
     },
     push(state) {
       innerState.push(state);
       top(innerState).enter();
+
+      onBattleUpdate(state);
     },
     currentStateComplete: () =>
       innerState.length ? top(innerState).hasExited() : true
