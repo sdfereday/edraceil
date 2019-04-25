@@ -6,7 +6,7 @@ export default ({
   name = 'player',
   getStat = query => {},
   setStat = (k, v) => {},
-  command = command => {},
+  command = (command, callback) => {},
   onActorUpdate = data => {},
   _target = null
 }, globalFSM) => {
