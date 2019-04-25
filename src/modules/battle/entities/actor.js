@@ -1,19 +1,19 @@
 import normalStateMachine from '../fsm/normalStateMachine'
-import stateRegistry from '../states/stateRegistry'
+import { onAttack, onHit, onCounter } from '../states/stateRegistry'
 
 export default ({
   id,
-  name,
-  globalFSM,
+  name = 'player',
   getStat = query => {},
   setStat = (k, v) => {},
   command = command => {},
   onActorUpdate = data => {},
   _target = null
-}) => {
+}, globalFSM) => {
   const internalFSM = normalStateMachine()
 
   return {
+    id,
     name,
     setTarget: target => {
       console.log(name + "'s target was set to " + target.name + '.')
@@ -22,8 +22,6 @@ export default ({
     update: () => internalFSM.update(),
     decide: () => {
       console.log(name + ' is deciding what to do...')
-
-      const onAttack = stateRegistry.get('onAttack')
       const attackState = onAttack({
         ownerId: id,
         target: _target,
@@ -34,8 +32,6 @@ export default ({
     },
     hit: ({ damage, originData }) => {
       console.log(name + ' got a hit from ' + originData.name + '.')
-
-      const onHit = stateRegistry.get('onHit')
       const hitState = onHit({
         ownerId: id,
         name,
@@ -48,7 +44,7 @@ export default ({
 
             console.log(name + ' decided to counter ' + originData.name + '.')
 
-            const onCounter = stateRegistry.get('onCounter')
+            const onCounter = onCounter;
             const counterState = onCounter({
               ownerId: id,
               target: _target,
@@ -63,11 +59,7 @@ export default ({
       internalFSM.push(hitState)
     },
     counterHit: ({ damage, originData }) => {
-      console.log(
-        name + ' got a counter attack hit from ' + originData.name + '.'
-      )
-
-      const onHit = stateRegistry.get('onHit')
+      console.log(name + ' got a counter attack hit from ' + originData.name + '.')
       const hitState = onHit({
         ownerId: id,
         name,

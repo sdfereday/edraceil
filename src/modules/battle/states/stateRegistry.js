@@ -4,7 +4,7 @@ import onCounter from "../states/onCounter";
 import onBreak from "../states/onBreak";
 import onNotFound from "../states/onNotFound";
 
-const registry = {
+export {
   onAttack,
   onHit,
   onCounter,

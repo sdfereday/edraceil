@@ -27,11 +27,11 @@ export default ({ participantData, onBattleEnded }) => {
 
   const actors = participantData.map(containerProps => {
     const { type } = containerProps;
-    
+
     // TODO: Use consts please.
     return type === 'player' ?
-      actor(containerProps) :
-      aiActor(containerProps);
+      actor(containerProps, actorQueueState) :
+      aiActor(containerProps, actorQueueState);
   })
 
   const turnIterator = createTurnIterator(actors);
@@ -39,8 +39,11 @@ export default ({ participantData, onBattleEnded }) => {
 
   // TODO: This should be done automatically / manually, not here
   // TODO: This is an id, not a name, fix this in battle module
-  const actorSam = actors.find(({ name }) => name === 'player-1');
-  const actorGnoll = actors.find(({ name }) => name === 'gnoll-1');
+  console.log(actors);
+  const actorSam = actors.find(({ id }) => id === 'player-1');
+  const actorGnoll = actors.find(({ id }) => id === 'gnoll-1');
+
+
   actorSam.setTarget(actorGnoll);
   actorGnoll.setTarget(actorSam);
 
