@@ -3,6 +3,7 @@ export const areaTable = [
         id: 'area-1',
         entities: [
             {
+                // TODO: Player data wouldn't exist in here normally, will move later.
                 id: 'player-1',
                 type: 'player', // TODO: Could use some consts here.
                 spriteConfig: {
@@ -12,12 +13,16 @@ export const areaTable = [
                     width: 20,
                     height: 40
                 },
+                equipment: [],
                 stats: {
                     health: {
                         max: 100,
                         min: 0,
                         current: 50
-                    }
+                    },
+                    susceptibleTo: [ // This should be changeable depending on equipment.
+                        'poison'
+                    ]
                 },
                 hitBox: {
                     radius: 1
@@ -33,12 +38,14 @@ export const areaTable = [
                     width: 20,
                     height: 40
                 },
+                equipment: [],
                 stats: {
                     health: {
                         max: 100,
                         min: 0,
                         current: 50
-                    }
+                    },
+                    susceptibleTo: []
                 },
                 hitBox: {
                     radius: 1
@@ -63,12 +70,14 @@ export const areaTable = [
                     width: 20,
                     height: 40
                 },
+                equipment: [],
                 stats: {
                     health: {
                         max: 100,
                         min: 0,
                         current: 50
-                    }
+                    },
+                    susceptibleTo: []
                 },
                 hitBox: {
                     radius: 1
@@ -93,12 +102,14 @@ export const areaTable = [
                     width: 20,
                     height: 40
                 },
+                equipment: [],
                 stats: {
                     health: {
                         max: 100,
                         min: 0,
                         current: 50
-                    }
+                    },
+                    susceptibleTo: ['poison']
                 },
                 hitBox: {
                     radius: 1

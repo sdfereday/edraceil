@@ -45,13 +45,14 @@ export default ({
    // and current zone everything's in). Each battle needs a zone, regardless wether it's
    // programatically done.
    const newBattle = BattleModule({
-      participantData: entityContainers.map(entity => {
+      participantData: entityContainers.map(({
+        interact,
+        ...entityProps
+      }) => {
+        console.log(entityProps);
         return {
-          id: entity.id,
-          type: entity.type,
-          getStats: entity.getStats,
-          setStats: entity.setStats,
-          command: entity.interact
+          command: interact,
+          ...entityProps
         }
       }),
       onBattleEnded

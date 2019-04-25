@@ -25,13 +25,13 @@ export default ({ participantData, onBattleEnded }) => {
     onBattleUpdate: watchBattleUpdate
   });
 
-  const actors = participantData.map(actorContainer => {
-    const { id, type, getStats, setStats, command } = actorContainer;
+  const actors = participantData.map(containerProps => {
+    const { type } = containerProps;
     
     // TODO: Use consts please.
     return type === 'player' ?
-      actor(id, actorQueueState, watchActorUpdate, { getStats, setStats, command }) :
-      aiActor(id, actorQueueState, watchActorUpdate, { getStats, setStats, command });
+      actor(containerProps) :
+      aiActor(containerProps);
   })
 
   const turnIterator = createTurnIterator(actors);

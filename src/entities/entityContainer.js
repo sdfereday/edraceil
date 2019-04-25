@@ -1,4 +1,5 @@
 import { normalize } from '../helpers/vectorHelpers'
+import { useState } from '../helpers/stateHelpers'
 
 export default ({
     id,
@@ -11,6 +12,44 @@ export default ({
     },
     _kontraSprite = null // TODO: Create a sprite interface so implementation doesn't matter.
 }) => {
+
+    /// Internal state
+    console.log(stats);
+    const [health, setHealth] = useState(stats.health);
+    const [susceptibleTo, setSusceptibleTo] = useState(stats.susceptibleTo);
+    const [statuses, setStatuses] = useState([]);
+
+    /// Access table for stats
+    const statTable = {
+        susceptibleTo: {
+            get: susceptibleTo,
+            set: () => {}
+        },
+        health: {
+            get: health,
+            set: (k, v) => setHealth({
+                ...stats.health,
+                current: v
+            })
+        },
+        status: {
+            get: statuses,
+            set: (k, v) => !statuses().some(status => status.type === v.type) && setStatuses([
+                ...statuses(),
+                v
+            ])
+        }
+    }
+
+    /// Internal methods
+    const _modifyStat = (key, value) => {
+        const stat = statTable[key];
+
+        if (stat) {
+            stat.set(key, value);
+        }
+    }
+
     const _move = (x, y) => {
         if (!_kontraSprite) return;
         // Normalize in all 8 directions
@@ -52,13 +91,14 @@ export default ({
         _kontraSprite.render();
     }
 
+    /// Public properties
     return {
         // Info
         id,
         type,
         spriteConfig,
-        getStats: () => stats,
-        setStats: ({ k: v }) => console.log('Modify stats:', k, v),
+        getStat: key => statTable[key].get(),
+        setStat: (key, value) => _modifyStat(key, value),
         hitbox: () => hitbox,
         // Actions
         move: ({ x, y }) => _move(x, y),

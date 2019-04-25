@@ -1,19 +1,16 @@
-import { guid } from '../helpers/dataHelpers'
 import normalStateMachine from '../fsm/normalStateMachine'
 import stateRegistry from '../states/stateRegistry'
 
-export default (
+export default ({
+  id,
   name,
   globalFSM,
-  fns = {
-    getStats: query => {},
-    setStats: ({ k: v }) => {},
-    command: command => {}
-  },
+  getStat = query => {},
+  setStat = (k, v) => {},
+  command = command => {},
   onActorUpdate = data => {},
-  _id = guid(),
   _target = null
-) => {
+}) => {
   const internalFSM = normalStateMachine()
 
   return {
@@ -28,7 +25,7 @@ export default (
 
       const onAttack = stateRegistry.get('onAttack')
       const attackState = onAttack({
-        ownerId: _id,
+        ownerId: id,
         target: _target,
         name
       })
@@ -40,7 +37,7 @@ export default (
 
       const onHit = stateRegistry.get('onHit')
       const hitState = onHit({
-        ownerId: _id,
+        ownerId: id,
         name,
         exitParams: {
           onExit: () => {
@@ -53,7 +50,7 @@ export default (
 
             const onCounter = stateRegistry.get('onCounter')
             const counterState = onCounter({
-              ownerId: _id,
+              ownerId: id,
               target: _target,
               name
             })
@@ -72,7 +69,7 @@ export default (
 
       const onHit = stateRegistry.get('onHit')
       const hitState = onHit({
-        ownerId: _id,
+        ownerId: id,
         name,
         onExit: () => {
           // You'd check stats here also.

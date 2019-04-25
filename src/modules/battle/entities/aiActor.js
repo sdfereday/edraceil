@@ -1,35 +1,31 @@
-import { guid } from '../helpers/dataHelpers'
 import normalStateMachine from '../fsm/normalStateMachine'
 import stateRegistry from '../states/stateRegistry'
 import { genericGambit } from '../ai/gambits'
 import { doStatLogic } from '../ai/functions'
-import stats from '../data/stats'
-import { poison } from '../data/statuses'
+import { poison } from '../../../data/statuses'
 
-export default (
+export default ({
+  id,
   name,
   globalFSM,
   onActorUpdate = data => {},
-  fns = {
-    getStats: query => {},
-    setStats: ({ k: v }) => {},
-    command: command => {}
-  },
-  _id = guid(),
+  getStat = query => {},
+  setStat = (k, v) => {},
+  command = command => {},
   _target = null
-) => {
+}) => {
   // TODO: Ensure you're getting individual instances of stats, it may not
-  // be the case if 'stats' is just being exported as an object.
-  const hp = stats.hp(100)
-  // Statuses that this entity are susceptible to a pushed here.
-  const susceptibleStatuses = stats.status([poison])
-
-  // You'd usually set this on hit if the thing has a latent effect on it
-  susceptibleStatuses.setStatus('poison')
-  // ...
-
   // Internal fsm handles all personal actions (animations, etc)
   const internalFSM = normalStateMachine()
+
+  // be the case if 'stats' is just being exported as an object.
+  const hp = getStat('health');
+
+  // Statuses that this entity are susceptible to a pushed here.
+  const susceptibleTo = getStat('susceptibleTo');
+
+  // TODO: Make sure to check susceptible trait when setting statuses (not done here).
+  setStat('status', poison);
 
   return {
     name,
@@ -43,14 +39,14 @@ export default (
       // the entity is in. You could potentially have a gambit that specifies
       // gambits to use.
       console.log(name + ' is deciding what to do...')
-      const stateResult = doStatLogic([hp, susceptibleStatuses], genericGambit)
+      const stateResult = doStatLogic([hp, susceptibleTo], genericGambit)
       const chosenState = stateRegistry.get(stateResult)
       console.log('Chose state:', stateResult)
 
       // Using this methods 'assumes' that all states take the same sort of data.
       globalFSM.push(
         chosenState({
-          ownerId: _id,
+          ownerId: id,
           target: _target,
           name
         })
@@ -61,8 +57,8 @@ export default (
 
       const onHit = stateRegistry.get('onHit')
       const hitState = onHit({
-        ownerId: _id,
         name,
+        ownerId: id,
         exitParams: {
           onExit: () => {
             // You'd check stats here also.
@@ -74,7 +70,7 @@ export default (
 
             const onCounter = stateRegistry.get('onCounter')
             const counterState = onCounter({
-              ownerId: _id,
+              ownerId: id,
               target: _target,
               name
             })
@@ -93,7 +89,7 @@ export default (
 
       const onHit = stateRegistry.get('onHit')
       const hitState = onHit({
-        ownerId: _id,
+        ownerId: id,
         name,
         onExit: () => {
           // You'd check stats here also.

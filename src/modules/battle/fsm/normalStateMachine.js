@@ -1,4 +1,4 @@
-import { top, forget } from "../helpers/arrayHelpers";
+import { top, forget } from "../../../helpers/arrayHelpers";
 
 export default (options = { onBattleUpdate: data => {} }) => {
   const { onBattleUpdate } = options;
