@@ -1,4 +1,4 @@
-import { top, forget } from "../helpers/arrayHelpers";
+import { top, forget } from "../../helpers/arrayHelpers";
 
 export const fsm = (options = { onUpdate: data => { } }) => {
   const { onUpdate } = options;
@@ -25,7 +25,7 @@ export const fsm = (options = { onUpdate: data => { } }) => {
       onUpdate(state);
     },
     currentStateComplete: () =>
-      innerState.length ? top(innerState).hasExited() : true
+      innerState.length ? innerState.every(x => x.hasExited()) : true
   };
 };
 

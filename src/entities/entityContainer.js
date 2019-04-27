@@ -1,7 +1,7 @@
 import { normalize } from '../helpers/vectorHelpers'
 import { useState } from '../helpers/stateHelpers'
-import { fsm } from '../states/normalStateMachine'
-import { onHit, onAttack } from '../states/stateRegistry'
+import { fsm } from '../states/machines/normalStateMachine'
+import { onHit, onAttack, onCounter } from '../states/stateRegistry'
 
 export default ({
     id,
@@ -12,7 +12,8 @@ export default ({
     hitbox = { // TODO: Move this too?
         radius: 1
     },
-    _actionFsm = fsm(),
+    _globalActionQueue = null,
+    _internalActionFSM = fsm(),
     _kontraSprite = null // TODO: Create a sprite interface so implementation doesn't matter.
 }) => {
 
@@ -92,7 +93,7 @@ export default ({
         }
 
         // Unsure..
-        _actionFsm.update();
+        _internalActionFSM.update();
     }
 
     const _render = () => {
@@ -109,50 +110,60 @@ export default ({
         getStat: key => statTable[key].get(),
         setStat: (key, value) => _modifyStat(key, value),
         hitbox: () => hitbox,
-        
+
         // Actions
         move: ({ x, y }) => _move(x, y),
         interact: (actionReq) => _interact(actionReq),
 
         // State actions (animator called from within state)
-        push: (stateName) => {
-            if (stateName === 'battle.onAttack') {
-                _actionFsm.push(onAttack({
-                    ownerId: id,
-                    target: _target,
-                    name
-                }))
-            }
-        },
         hit: ({ damage, originData }) => {
             console.log(id + ' got a hit from ' + originData.name + '.')
             const hitState = onHit({
                 ownerId: id,
-                name,
+                name: id,
                 exitParams: {
                     onExit: () => {
-                        // globalFSM.push(counterState)
+                        // maybe stick counter here?
                     }
                 }
             })
 
-            _actionFsm.push(hitState)
+            _internalActionFSM.push(hitState)
+
+            // Simulates a counter (should happen after hit has exited)
+            /// NOTE: The reason we have a global queue? So when someone
+            /// presses a counter, it doesn't do it whilst the attack's finishing.
+            if (1) {
+                console.log(id + ' decided to counter ' + originData.name + '.')
+
+                const counterState = onCounter({
+                    ownerId: id,
+                    target: target(),
+                    name: id
+                })
+
+                // So this should be either in a latent queue fired between turns,
+                // or stuck in a global thing.
+                _globalActionQueue.push(counterState)
+            }
+        },
+        counterHit: ({ }) => {
+            // ?
         },
         decide: () => {
-            // ... ?
-            _actionFsm.push(onAttack({
+            // Run ai logic or just wait for manual input
+            // We push to global action because we don't want it being interrupted by counters, etc.
+            _globalActionQueue.push(onAttack({
                 ownerId: id,
                 target: target(),
                 name: id
             }))
         },
-        counter: () => {
-            // ... ?
-        },
         setTarget: v => setTarget(v),
-        currentStateComplete: () => _actionFsm.currentStateComplete(),
-        onTurnChanged: () => {},
-        
+        setGlobalQueue: v => _globalActionQueue = v,
+        currentStateComplete: () => _internalActionFSM.currentStateComplete(),
+        onTurnChanged: () => { },
+
         // Kontra methods & info (used to find out where we are in the world visually)
         setSprite: (kSprite) => _kontraSprite = kSprite,
         x: () => _kontraSprite ? _kontraSprite.x : 0,

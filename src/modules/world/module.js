@@ -10,13 +10,25 @@ import { areaTable } from '../../data/areas'
 import { loadArea } from '../../map/mapLoader'
 
 /// State
+import queueStateMachine from '../../states/machines/queueStateMachine'
 import { useState } from '../../helpers/stateHelpers'
+
+// ...
+const watchQueueUpdate = (data) => {
+  console.log('There was a battle update.');
+  console.log(data);
+}
 
 export default ({
   createSpriteMethod,
   keyPressedHandler,
   keyBindingMethod
 }) => {
+  // Used for any blocking-events that are needed to be created (field or battle)
+  const globalActionQueue = queueStateMachine({
+    onUpdate: watchQueueUpdate
+  });
+
   const [currentBattle, setCurrentBattle] = useState(null)
   const [isInBattle, setIsInBattle] = useState(false)
 
@@ -46,6 +58,7 @@ export default ({
    // programatically done.
    const newBattle = BattleModule({
       entityContainers,
+      globalActionQueue,
       onBattleEnded
    });
 
@@ -56,6 +69,7 @@ export default ({
   const { getEntities, getEntity } = loadArea({
     query: 'area-1',
     fromTable: areaTable,
+    globalActionQueue,
     createSpriteMethod
   })
 
