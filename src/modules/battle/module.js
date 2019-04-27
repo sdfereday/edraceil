@@ -1,31 +1,45 @@
+import queueStateMachine from '../../states/machines/queueStateMachine'
 import { createTurnIterator } from "../../utils/turnGenerator";
 
-export default ({ entityContainers, globalActionQueue, onBattleEnded }) => {
+const watchQueueUpdate = (data) => {
+  console.log('There was a battle update.');
+  console.log(data);
+}
+
+export default ({ entityContainers, onBattleEnded }) => {
 
   console.log('New battle started!');
 
+  const sharedQueueFSM = queueStateMachine({ onUpdate: watchQueueUpdate });
   const turnIterator = createTurnIterator(entityContainers);// createTurnIterator(actors);
-  const requiredComplete = [globalActionQueue].concat(entityContainers); //.concat(actors);
 
-  // // TODO: This should be done automatically / manually, not here
   // // TODO: This is an id, not a name, fix this in battle module
-  // console.log(actors);
   const actorSam = entityContainers.find(({ id }) => id === 'player-1');
+  actorSam.battle.subscribeGlobalQueue(sharedQueueFSM)
+
   const actorGnoll = entityContainers.find(({ id }) => id === 'gnoll-1');
-  actorSam.setTarget(actorGnoll);
-  actorGnoll.setTarget(actorSam);
+  actorGnoll.battle.subscribeGlobalQueue(sharedQueueFSM)
+
+  // Set targets (usually handled in other ways), and is it really
+  // that great to pass just the provider? This all seems a little flakey.
+  actorSam.battle.setTarget(actorGnoll.battle);
+  actorGnoll.battle.setTarget(actorSam.battle);
 
   const _update = () => {
-    globalActionQueue.update();
+    sharedQueueFSM.update();
 
-    if (requiredComplete.every(x => x.currentStateComplete())) {
-      const { id, decide} = turnIterator.getNextValue();
+    const sharedQueueReady = sharedQueueFSM.currentStateComplete();
+    const actorsReady = entityContainers.every(({ battle }) => battle.currentStateComplete());
+
+    if (sharedQueueReady && actorsReady) {
+      const { id, battle } = turnIterator.getNextValue();
+      const { decide } = battle;
       console.log(
         "%c" + id + "'s turn.",
         "background: #e2e3e5; color: #383d41"
       );
 
-      entityContainers.map(x => x.onTurnChanged());
+      entityContainers.map(({ battle }) => battle.onTurnChanged());
       decide();
     }
   }

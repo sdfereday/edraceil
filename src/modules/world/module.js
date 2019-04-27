@@ -1,44 +1,35 @@
-/// Sub Modules
+import kontra from 'kontra'
 import BattleModule from '../battle/module';
-
-/// Input
 import { onPlayerInteracted } from '../../input/handlers/onPlayerInteracted'
 import controller from '../../input/controllers'
-
-/// Map Data
 import { areaTable } from '../../data/areas'
 import { loadArea } from '../../map/mapLoader'
-
-/// State
-import queueStateMachine from '../../states/machines/queueStateMachine'
 import { useState } from '../../helpers/stateHelpers'
+import { actionTable } from '../../data/actions'
 
-// ...
-const watchQueueUpdate = (data) => {
-  console.log('There was a battle update.');
-  console.log(data);
-}
-
-export default ({
-  createSpriteMethod,
-  keyPressedHandler,
-  keyBindingMethod
-}) => {
-  // Used for any blocking-events that are needed to be created (field or battle)
-  const globalActionQueue = queueStateMachine({
-    onUpdate: watchQueueUpdate
-  });
-
+export default () => {
   const [currentBattle, setCurrentBattle] = useState(null)
   const [isInBattle, setIsInBattle] = useState(false)
+
+  const interact = (actionReqId, playerId, originId) => {
+    console.log(playerId, 'received signal to', actionReqId, 'from', originId);
+    const chosenAction = actionTable.find(({ actionId }) => actionId === actionReqId);
+
+    if (chosenAction) {
+      console.log('And found an action to match:');
+      console.log(chosenAction);
+    } else {
+      console.log('But no action was found.');
+    }
+  }
 
   const onBattleEnded = () => {
     /*
     When battle results tallied, etc
     - Re-enable the movement inputs for player
     */
-   setCurrentBattle(null);
-   setIsInBattle(false);
+    setCurrentBattle(null);
+    setIsInBattle(false);
   }
 
   const startBattle = entityContainers => {
@@ -53,39 +44,41 @@ export default ({
     - Show graphical ui for battle
     - Set positions of entities to nearest available battle coords
     */
-   // ... find positions in battle radius (should be able to get these from the area data
-   // and current zone everything's in). Each battle needs a zone, regardless wether it's
-   // programatically done.
-   const newBattle = BattleModule({
+    // ... find positions in battle radius (should be able to get these from the area data
+    // and current zone everything's in). Each battle needs a zone, regardless wether it's
+    // programatically done.
+    const newBattle = BattleModule({
       entityContainers,
-      globalActionQueue,
       onBattleEnded
-   });
+    });
 
-   setCurrentBattle(newBattle);
-   setIsInBattle(true);
+    setCurrentBattle(newBattle);
+    setIsInBattle(true);
   }
 
   const { getEntities, getEntity } = loadArea({
     query: 'area-1',
-    fromTable: areaTable,
-    globalActionQueue,
-    createSpriteMethod
+    fromTable: areaTable
   })
 
   const entities = getEntities()
   const player = getEntity('player-1')
   const hostile = getEntity('gnoll-1')
 
+  // TODO: I'll be moving inputs in to a special player-only container soon.
   const manualControl = controller.init({
-    keyPressedHandler,
+    keyPressedHandler: kontra.keys.pressed,
     bindings: [
       {
         bind: 'e',
         to: () => {
-          onPlayerInteracted({ entities, player })
+          onPlayerInteracted({
+            entities: entities.map(({ id, type, spriteInfo }) => ({ id, type, ...spriteInfo })),
+            player: { id: player.id, type: player.type, ...player.spriteInfo },
+            onSuccess: (actionReqId, playerId, originId) => interact(actionReqId, playerId, originId)
+          })
         },
-        keyBindingMethod
+        keyBindingMethod: kontra.keys.bind
       },
       // Literally just for testing battle, usually this would be a trigger of some sort in environment.
       {
@@ -93,7 +86,7 @@ export default ({
         to: () => {
           startBattle([player, hostile])
         },
-        keyBindingMethod
+        keyBindingMethod: kontra.keys.bind
       }
     ]
   })
@@ -104,8 +97,9 @@ export default ({
       const battle = currentBattle();
       battle.update()
     } else {
+      // TODO: I'll be moving inputs in to a special player-only container soon.
       const pos = manualControl.move({ speed: 10 })
-      player.move(pos)
+      player.kontra.move(pos)
     }
 
     // Kontra note: Update must be called (container is entry point).

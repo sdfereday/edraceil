@@ -3,10 +3,7 @@ import { distance } from '../../helpers/physicsHelpers'
 import { getAction } from '../../helpers/actionHelpers'
 import { actionTable } from '../../data/actions'
 
-export const onPlayerInteracted = ({ entities, player }) => {
-  // player.interact((interestingData) => {
-  //     console.log(interestingData);
-  // });
+export const onPlayerInteracted = ({ entities, player, onSuccess = (actionReq) => { } }) => {
 
   const overlappingWithPlayer = entities
     .filter(entity => {
@@ -42,13 +39,15 @@ export const onPlayerInteracted = ({ entities, player }) => {
   // With distance check applied also
   if (overlappingWithPlayer.length) {
     const entity = overlappingWithPlayer[0]
-    const actionReq = getAction({
+    const actionReqId = getAction({
       id: entity.id,
       type: entity.type,
       actionTable
     })
 
-    entity.interact(actionReq)
+    /// It might even be best to just trigger these actions from a global place?
+    // entity.interact(actionReq)
+    onSuccess(actionReqId, player.id, entity.id);
   }
 
   // Useful for enemies
