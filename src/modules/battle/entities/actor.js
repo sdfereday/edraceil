@@ -11,6 +11,7 @@ export default ({
   _target = null
 }, globalFSM) => {
   const internalFSM = normalStateMachine()
+  const hp = getStat('health');
 
   return {
     id,
@@ -44,7 +45,6 @@ export default ({
 
             console.log(name + ' decided to counter ' + originData.name + '.')
 
-            const onCounter = onCounter;
             const counterState = onCounter({
               ownerId: id,
               target: _target,

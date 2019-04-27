@@ -1,5 +1,7 @@
 import { normalize } from '../helpers/vectorHelpers'
 import { useState } from '../helpers/stateHelpers'
+import { fsm } from '../states/normalStateMachine'
+import { onHit, onAttack } from '../states/stateRegistry'
 
 export default ({
     id,
@@ -10,20 +12,25 @@ export default ({
     hitbox = { // TODO: Move this too?
         radius: 1
     },
+    _actionFsm = fsm(),
     _kontraSprite = null // TODO: Create a sprite interface so implementation doesn't matter.
 }) => {
 
     /// Internal state
+    // Status
     console.log(stats);
     const [health, setHealth] = useState(stats.health);
     const [susceptibleTo, setSusceptibleTo] = useState(stats.susceptibleTo);
     const [statuses, setStatuses] = useState([]);
 
+    // Battle
+    const [target, setTarget] = useState(null);
+
     /// Access table for stats
     const statTable = {
         susceptibleTo: {
             get: susceptibleTo,
-            set: () => {}
+            set: () => { }
         },
         health: {
             get: health,
@@ -62,7 +69,6 @@ export default ({
     }
 
     const _interact = (actionReq) => {
-        if (!_kontraSprite) return;
         console.log(id, 'received signal to', actionReq);
         const chosenAction = actions.find(({ id }) => id === actionReq);
 
@@ -84,6 +90,9 @@ export default ({
         if (_kontraSprite.x > kontra.canvas.width) {
             _kontraSprite.x = -_kontraSprite.width;
         }
+
+        // Unsure..
+        _actionFsm.update();
     }
 
     const _render = () => {
@@ -91,7 +100,7 @@ export default ({
         _kontraSprite.render();
     }
 
-    /// Public properties
+    /// Public properties (hocs or providers would be good here)
     return {
         // Info
         id,
@@ -100,9 +109,50 @@ export default ({
         getStat: key => statTable[key].get(),
         setStat: (key, value) => _modifyStat(key, value),
         hitbox: () => hitbox,
+        
         // Actions
         move: ({ x, y }) => _move(x, y),
         interact: (actionReq) => _interact(actionReq),
+
+        // State actions (animator called from within state)
+        push: (stateName) => {
+            if (stateName === 'battle.onAttack') {
+                _actionFsm.push(onAttack({
+                    ownerId: id,
+                    target: _target,
+                    name
+                }))
+            }
+        },
+        hit: ({ damage, originData }) => {
+            console.log(id + ' got a hit from ' + originData.name + '.')
+            const hitState = onHit({
+                ownerId: id,
+                name,
+                exitParams: {
+                    onExit: () => {
+                        // globalFSM.push(counterState)
+                    }
+                }
+            })
+
+            _actionFsm.push(hitState)
+        },
+        decide: () => {
+            // ... ?
+            _actionFsm.push(onAttack({
+                ownerId: id,
+                target: target(),
+                name: id
+            }))
+        },
+        counter: () => {
+            // ... ?
+        },
+        setTarget: v => setTarget(v),
+        currentStateComplete: () => _actionFsm.currentStateComplete(),
+        onTurnChanged: () => {},
+        
         // Kontra methods & info (used to find out where we are in the world visually)
         setSprite: (kSprite) => _kontraSprite = kSprite,
         x: () => _kontraSprite ? _kontraSprite.x : 0,

@@ -1,14 +1,14 @@
-import onAttack from "../states/onAttack";
-import onHit from "../states/onHit";
-import onCounter from "../states/onCounter";
-import onBreak from "../states/onBreak";
-import onNotFound from "../states/onNotFound";
+import onAttack from "./battle/onAttack";
+import onHit from "./response/onHit";
+import onNotFound from "./system/onNotFound";
+// import onCounter from "../states/onCounter";
+// import onBreak from "../states/onBreak";
 
 export {
   onAttack,
   onHit,
-  onCounter,
-  onBreak
+  // onCounter,
+  // onBreak
 };
 
 // State registry doesn't have to be used, it's just easier when the required

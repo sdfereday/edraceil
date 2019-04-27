@@ -26,7 +26,19 @@ export const areaTable = [
                 },
                 hitBox: {
                     radius: 1
-                }
+                },
+                actions: [
+                    {
+                        name: 'Attack',
+                        id: 'attack-target',
+                        do: [
+                            // ... animations, functions, etc
+                            {
+                                state: 'onAttack'
+                            }
+                        ]
+                    }
+                ]
             },
             {
                 id: 'box-1',

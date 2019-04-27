@@ -1,4 +1,4 @@
-import { first } from "../../../helpers/arrayHelpers";
+import { first } from "../helpers/arrayHelpers";
 
 export const doStatLogic = (stats, gambits) => {
   const result = first(

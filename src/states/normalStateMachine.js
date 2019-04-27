@@ -1,7 +1,7 @@
-import { top, forget } from "../../../helpers/arrayHelpers";
+import { top, forget } from "../helpers/arrayHelpers";
 
-export default (options = { onBattleUpdate: data => {} }) => {
-  const { onBattleUpdate } = options;
+export const fsm = (options = { onUpdate: data => { } }) => {
+  const { onUpdate } = options;
   let innerState = [];
 
   return {
@@ -15,16 +15,18 @@ export default (options = { onBattleUpdate: data => {} }) => {
         s.exit();
         innerState = forget(s.id, innerState);
 
-        onBattleUpdate(innerState);
+        onUpdate(innerState);
       }
     },
     push(state) {
       innerState.push(state);
       top(innerState).enter();
 
-      onBattleUpdate(state);
+      onUpdate(state);
     },
     currentStateComplete: () =>
       innerState.length ? top(innerState).hasExited() : true
   };
 };
+
+export default fsm;
