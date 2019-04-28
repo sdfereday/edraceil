@@ -1,7 +1,7 @@
 export default ({
-  ownerId,
-  name,
+  id,
   target,
+  origin,
   exitParams,
   _isComplete = false,
   _exited = false
@@ -13,7 +13,7 @@ export default ({
     console.log("========== 3 ==========");
     // TODO: Get actor data by ID here perhaps instead of passing it all?
     console.log(
-      "%c----> Execute Counter State For " + name,
+      "%c----> Execute Counter State For " + id,
       "background: #cce5ff; color: #004085"
     );
 
@@ -22,11 +22,11 @@ export default ({
       "background: #cce5ff; color: #004085"
     );
 
-    target.counterHit({
-      damage: 1,
-      originData: {
-        ownerId,
-        name
+    target.command({
+      action: 'counterHit',
+      meta: {
+        damage: 1,
+        originId: id
       }
     });
 
@@ -39,7 +39,7 @@ export default ({
   },
   exit() {
     console.log(
-      "%cExited Counter State " + name,
+      "%cExited Counter State " + id,
       "background: #cce5ff; color: #004085"
     );
     _exited = true;

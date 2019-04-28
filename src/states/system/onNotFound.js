@@ -1,6 +1,5 @@
 export default ({
-    ownerId,
-    name,
+    id,
     target,
     exitParams,
     _isComplete = false,
@@ -10,7 +9,7 @@ export default ({
     isComplete: () => _isComplete,
     hasExited: () => _exited,
     enter() {
-      console.error(name + " tried to enter a state that doesn't exist.");
+      console.error(id + " tried to enter a state that doesn't exist.");
     },
     update() {
       // ...

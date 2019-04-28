@@ -1,6 +1,6 @@
 import { first, forget } from "../../helpers/arrayHelpers";
 
-export default (options = { onUpdate: data => {} }) => {
+export default (options = { onUpdate: data => { } }) => {
   const { onUpdate } = options;
   let innerState = [];
 
@@ -14,7 +14,7 @@ export default (options = { onUpdate: data => {} }) => {
       if (s.isComplete()) {
         s.exit();
         innerState = forget(s.id, innerState);
-        
+
         if (innerState.length > 0) {
           first(innerState).enter();
         }

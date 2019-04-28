@@ -1,4 +1,5 @@
 import kontra from 'kontra'
+import queueStateMachine from '../../states/machines/queueStateMachine'
 import BattleModule from '../battle/module';
 import { onPlayerInteracted } from '../../input/handlers/onPlayerInteracted'
 import controller from '../../input/controllers'
@@ -8,6 +9,14 @@ import { useState } from '../../helpers/stateHelpers'
 import { actionTable } from '../../data/actions'
 
 export default () => {
+
+  const globalBattleFSM = queueStateMachine({
+    onUpdate: (data) => {
+      console.log('There was a battle update.');
+      console.log(data);
+    }
+  });
+
   const [currentBattle, setCurrentBattle] = useState(null)
   const [isInBattle, setIsInBattle] = useState(false)
 
@@ -49,6 +58,7 @@ export default () => {
     // programatically done.
     const newBattle = BattleModule({
       entityContainers,
+      globalBattleFSM,
       onBattleEnded
     });
 
@@ -58,7 +68,8 @@ export default () => {
 
   const { getEntities, getEntity } = loadArea({
     query: 'area-1',
-    fromTable: areaTable
+    fromTable: areaTable,
+    globalBattleFSM
   })
 
   const entities = getEntities()
@@ -94,20 +105,20 @@ export default () => {
   const _update = () => {
 
     if (isInBattle()) {
-      const battle = currentBattle();
-      battle.update()
+      globalBattleFSM.update();
+      currentBattle().update();
     } else {
       // TODO: I'll be moving inputs in to a special player-only container soon.
-      const pos = manualControl.move({ speed: 10 })
-      player.kontra.move(pos)
+      const pos = manualControl.move({ speed: 10 });
+      player.kontra.move(pos);
     }
 
     // Kontra note: Update must be called (container is entry point).
-    entities.forEach(entity => entity.update())
+    entities.forEach(entity => entity.update());
   }
   const _render = () => {
     // Kontra note: Render must be called (container is entry point).
-    entities.forEach(entity => entity.render())
+    entities.forEach(entity => entity.render());
   }
 
   return {

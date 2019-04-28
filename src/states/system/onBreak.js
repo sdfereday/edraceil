@@ -1,6 +1,5 @@
 export default ({
-  ownerId,
-  name,
+  id,
   target,
   exitParams,
   _isComplete = false,

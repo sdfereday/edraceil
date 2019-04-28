@@ -1,6 +1,5 @@
 export default ({
-    ownerId,
-    name,
+    id,
     exitParams,
     _isComplete = false,
     _exited = false
@@ -11,7 +10,7 @@ export default ({
     enter() {
       console.log("========== 2 ==========");
       console.log(
-        "%c -> Entered onDamaged State" + ownerId,
+        "%c -> Entered onDamaged State" + id,
         "background: #f8d7da; color: #721c24"
       );
   
@@ -28,7 +27,7 @@ export default ({
     },
     exit() {
       console.log(
-        "%c <- Exited onDamaged State" + ownerId,
+        "%c <- Exited onDamaged State" + id,
         "background: #f8d7da; color: #721c24"
       );
       _exited = true;
