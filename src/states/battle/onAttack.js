@@ -1,7 +1,6 @@
 export default ({
   id,
   target,
-  origin,
   exitParams,
   _isComplete = false,
   _exited = false
@@ -17,18 +16,20 @@ export default ({
     );
 
     setTimeout(() => {
+      // Or we use physics hit detection instead (but this way is deterministic).
+      // const targetObj = battleStore.get(target);
+      // targetObj.command({
+      //   action: 'hit',
+      //   meta: {
+      //     damage: 1,
+      //     origin: id
+      //   }
+      // });
+
       console.log(
-        "%c --> Simulating a fake strike against => " + target.id,
+        "%c --> Simulating a fake strike against => " + target,
         "background: #fff3cd; color: #856404"
       );
-      // Or we use physics hit detection instead (but this way is deterministic).
-      target.command({
-        action: 'hit',
-        meta: {
-          damage: 1,
-          origin
-        }
-      });
     }, 500);
 
     // Waits for user input or a conditional choice, etc.

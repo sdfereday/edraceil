@@ -7,6 +7,7 @@ import { areaTable } from '../../data/areas'
 import { loadArea } from '../../map/mapLoader'
 import { useState } from '../../helpers/stateHelpers'
 import { actionTable } from '../../data/actions'
+import battleStore from '../../data/battleStore'
 
 export default () => {
 
@@ -36,7 +37,9 @@ export default () => {
     /*
     When battle results tallied, etc
     - Re-enable the movement inputs for player
+    - Erase stored entities in battle store for next time
     */
+    battleStore.reset();
     setCurrentBattle(null);
     setIsInBattle(false);
   }
@@ -61,6 +64,9 @@ export default () => {
       globalBattleFSM,
       onBattleEnded
     });
+
+    // Register this battles entities so they can be accessed elsewhere.
+    battleStore.init(entityContainers);
 
     setCurrentBattle(newBattle);
     setIsInBattle(true);

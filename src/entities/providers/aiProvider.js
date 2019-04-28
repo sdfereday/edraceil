@@ -6,16 +6,16 @@ other functions within, rather than it be removed.
 */
 export default () => {
     return {
-        decide: (availableEntities, me) => {
+        decide: (availableEntities, origin) => {
             // Pick a target (should never be the same as this)
-            const myTarget = availableEntities[0]; // Will filter better later.
+            const { id } = availableEntities[0]; // Will filter better later.
 
             // Return a decided action (whatever that is)
             return {
                 action: 'attack',
                 meta: {
-                    target: myTarget,
-                    origin: me
+                    target: id,
+                    origin
                 }
             };
         }

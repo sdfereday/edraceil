@@ -27,7 +27,6 @@ export default ({
     ...props
 }) => {
     const { spriteConfig, globalBattleFSM } = props;
-    console.log(props);
 
     // FSM for local actions
     const localFSM = fsm();
@@ -47,6 +46,21 @@ export default ({
         }
     });
 
+    // Expose this to anything that has the ability to instruct this entity
+    const performCommand = ({ action, meta }) => {
+
+        const command = entityCommands[action];
+
+        if (command) {
+            command({
+                id,
+                mover,
+                animator,
+                ...meta
+            });
+        }
+    }
+
     // Commands that public can call from states, etc
     const damageCommands = DamageCommands({
         id,
@@ -65,20 +79,6 @@ export default ({
     const entityCommands = {
         ...damageCommands,
         ...attackCommands
-    }
-
-    const performCommand = ({ action, meta }) => {
-
-        const command = entityCommands[action];
-
-        if (command) {
-            command({
-                id,
-                mover,
-                animator,
-                ...meta
-            });
-        }
     }
 
     /// Any methods that need to make use of main game loop are extracted here (usually update or render).

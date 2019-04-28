@@ -1,7 +1,6 @@
 export default ({
   id,
   target,
-  origin,
   exitParams,
   _isComplete = false,
   _exited = false
@@ -10,25 +9,30 @@ export default ({
   isComplete: () => _isComplete,
   hasExited: () => _exited,
   enter() {
+    // Counter push may happen on a hit, can be found at the commands
+    // area. Overlapping physics means we need only go to the location.
+    // Any stat math can be done in the onHit, or just before it. You can
+    // also get the weapon data origin to read what you're up against.
     console.log("========== 3 ==========");
-    // TODO: Get actor data by ID here perhaps instead of passing it all?
     console.log(
       "%c----> Execute Counter State For " + id,
       "background: #cce5ff; color: #004085"
     );
 
+    // Or we use physics hit detection instead (but this way is deterministic).
+    // const targetObj = battleStore.get(target);
+    // targetObj.command({
+    //   action: 'counterHit',
+    //   meta: {
+    //     damage: 1,
+    //     origin: id
+    //   }
+    // });
+
     console.log(
-      "%c----> Attacking " + "???", //target.getName(),
+      "%c----> Attacking " + target, //target.getName(),
       "background: #cce5ff; color: #004085"
     );
-
-    target.command({
-      action: 'counterHit',
-      meta: {
-        damage: 1,
-        originId: id
-      }
-    });
 
     setTimeout(() => {
       _isComplete = true;
