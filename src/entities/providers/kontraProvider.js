@@ -8,6 +8,13 @@ export default ({
     }
 }) => {
     const sprite = kontra.sprite(spriteConfig);
+    const weaponBox = kontra.sprite({
+        color: 'red',
+        x: sprite.x + 30,
+        y: sprite.y + 30,
+        width: 20,
+        height: 20
+    })
 
     const _move = (x, y) => {
         if (!sprite) return;
@@ -30,6 +37,9 @@ export default ({
         if (sprite.x > kontra.canvas.width) {
             sprite.x = -sprite.width;
         }
+
+        weaponBox.x = sprite.x;
+        weaponBox.y = sprite.y;
     }
 
     const _render = () => {
